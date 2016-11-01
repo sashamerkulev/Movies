@@ -5,9 +5,9 @@ import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 
-import retrofit.Call;
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import ru.merkulyevsasha.movies.models.Details;
 import ru.merkulyevsasha.movies.models.Movies;
 
