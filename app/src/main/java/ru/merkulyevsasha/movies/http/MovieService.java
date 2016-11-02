@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.merkulyevsasha.movies.models.Details;
@@ -31,8 +32,9 @@ public class MovieService {
     }
 
     public Movies latest(String language, int page) throws IOException {
-        Call<Movies> movies = movieInterface.movies("latest", API_KEY, language, page);
-        return movies.execute().body();
+        Call<Movies> movies = movieInterface.latest(API_KEY, language);
+        Response<Movies> response = movies.execute();
+        return response.body();
     }
 
     public Movies popular(String language, int page) throws IOException {

@@ -13,6 +13,9 @@ public interface MovieInterface {
     @GET("movie/{request}")
     Call<Movies> movies(@Path("request") String request, @Query("api_key") String api, @Query("language") String language, @Query("page") int page);
 
+    @GET("movie/latest")
+    Call<Movies> latest(@Query("api_key") String api, @Query("language") String language);
+
     @GET("search/movie")
     Call<Movies> search(@Query("query") String query, @Query("api_key") String api, @Query("language") String language, @Query("page") int page);
 
