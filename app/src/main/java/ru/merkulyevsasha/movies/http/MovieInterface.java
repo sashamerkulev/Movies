@@ -7,6 +7,7 @@ import retrofit2.http.Query;
 
 import ru.merkulyevsasha.movies.models.Details;
 import ru.merkulyevsasha.movies.models.Movies;
+import rx.Observable;
 
 public interface MovieInterface {
 
@@ -18,6 +19,9 @@ public interface MovieInterface {
 
     @GET("search/movie")
     Call<Movies> search(@Query("query") String query, @Query("api_key") String api, @Query("language") String language, @Query("page") int page);
+
+    @GET("search/movie")
+    Observable<Movies> search2(@Query("query") String query, @Query("api_key") String api, @Query("language") String language, @Query("page") int page);
 
     @GET("movie/{movie}")
     Call<Details> details(@Path("movie") int movie, @Query("api_key") String api, @Query("language") String language, @Query("page") int page);

@@ -1,5 +1,7 @@
 package ru.merkulyevsasha.movies;
 
+import android.app.Activity;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
@@ -13,6 +15,7 @@ import android.view.MenuItem;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import butterknife.Bind;
 import ru.merkulyevsasha.movies.adapters.RecyclerViewAdapter;
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private RecyclerViewAdapter mAdapter;
 
     private int mPage;
+    private String mLocale;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mLocale = Locale.getDefault().getLanguage();
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -92,27 +98,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             }
         };
 
-        Observable.create(new Observable.OnSubscribe<Movies>() {
-            @Override
-            public void call(Subscriber<? super Movies> subscriber) {
-                try {
-                    MovieService service = new MovieService();
-                    Movies result = service.search(queryText, "ru", mPage);
-                    subscriber.onNext(result);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Movies emptyMovies = new Movies();
-                    emptyMovies.results = new ArrayList<Movie>();
-                    subscriber.onNext(emptyMovies);
-                } finally {
-                    subscriber.onCompleted();
-                }
-            }
-        })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(moviesSubscriber);
-
+        try {
+            MovieService service = new MovieService();
+            service.search2(queryText, mLocale, mPage)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(moviesSubscriber);
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
         return false;
     }
 
