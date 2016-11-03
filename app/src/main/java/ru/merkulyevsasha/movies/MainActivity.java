@@ -98,19 +98,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             }
         };
 
-        try {
-            MovieService service = new MovieService();
-            service.search2(queryText, mLocale, mPage)
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(moviesSubscriber);
-        }
-        catch(IOException e) {
-            e.printStackTrace();
-            Snackbar.make(activity.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
-                    .setAction("Action", null)
-                    .show();
-        }
+        MovieService service = new MovieService();
+        service.search2(queryText, mLocale, mPage)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(moviesSubscriber);        
         return false;
     }
 
