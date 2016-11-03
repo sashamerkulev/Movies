@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
 
         mPage = 1;
-
+        final Activity activity = this;
         Subscriber<Movies> moviesSubscriber = new Subscriber<Movies>() {
             @Override
             public void onCompleted() {
@@ -80,9 +80,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             @Override
             public void onError(Throwable e) {
-//            Snackbar.make(this.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null)
-//                    .show();
+                Snackbar.make(activity.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
+                        .setAction("Action", null)
+                        .show();
             }
 
             @Override
@@ -91,9 +91,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     mAdapter.Items = movies.results;
                     mAdapter.notifyDataSetChanged();
                 } else {
-//            Snackbar.make(this.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null)
-//                    .show();
+                    Snackbar.make(activity.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
+                            .setAction("Action", null)
+                            .show();
                 }
             }
         };
@@ -105,8 +105,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(moviesSubscriber);
         }
-        catch(IOException e){
+        catch(IOException e) {
             e.printStackTrace();
+            Snackbar.make(activity.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
+                    .setAction("Action", null)
+                    .show();
         }
         return false;
     }
