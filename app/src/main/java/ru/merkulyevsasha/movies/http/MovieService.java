@@ -54,7 +54,7 @@ public class MovieService {
         return movies.execute().body();
     }
 
-    public Observable<Movies> search2(String query, String language, int page) throws IOException {
+    public Observable<Movies> search2(String query, String language, int page) {
         return movieInterface.search2(query, API_KEY, language, page);
     }
 
