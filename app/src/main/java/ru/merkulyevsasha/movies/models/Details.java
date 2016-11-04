@@ -52,7 +52,7 @@ public class Details {
     public List<Dict> productionCompanies;
     @SerializedName("production_countries")
     @Expose
-    public List<Country> productionCountries;
+    public List<Dict> productionCountries;
     @SerializedName("release_date")
     @Expose
     public Date releaseDate;
@@ -64,7 +64,7 @@ public class Details {
     public int runtime;
     @SerializedName("spoken_languages")
     @Expose
-    public List<Language> spokenLanguages;
+    public List<Dict> spokenLanguages;
     @SerializedName("status")
     @Expose
     public String status;

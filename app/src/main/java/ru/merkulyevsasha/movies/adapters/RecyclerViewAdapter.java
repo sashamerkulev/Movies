@@ -9,13 +9,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import ru.merkulyevsasha.movies.DetailsActivity;
 import ru.merkulyevsasha.movies.R;
 import ru.merkulyevsasha.movies.models.Movie;
 
@@ -35,10 +34,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         ItemViewHolder holder = new ItemViewHolder(view, new OnClickListener() {
             @Override
             public void onItemClick(View v, int position) {
-//                Intent link_intent = new Intent(mActivity, WebViewActivity.class);
-//                Movie item = Items.get(position);
-//                link_intent.putExtra("link", item.Link);
-//                mActivity.startActivity(link_intent);
+                Intent detailsIntent = new Intent(mActivity, DetailsActivity.class);
+                Movie item = Items.get(position);
+                detailsIntent.putExtra("movieId", item.id);
+                mActivity.startActivity(detailsIntent);
             }
         });
         return holder;

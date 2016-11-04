@@ -1,7 +1,5 @@
 package ru.merkulyevsasha.movies;
 
-import android.app.Activity;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
@@ -12,21 +10,23 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
+
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 import ru.merkulyevsasha.movies.adapters.RecyclerViewAdapter;
 import ru.merkulyevsasha.movies.http.MovieService;
 import ru.merkulyevsasha.movies.models.Movie;
 import ru.merkulyevsasha.movies.models.Movies;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
@@ -35,10 +35,17 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private int mPage;
     private String mLocale;
 
+    @Bind(R.id.content_main)
+    public View mRootView;
+
+    private Subscription mSubscription;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -47,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(layoutManager);
-        //recyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(true);
         mAdapter = new RecyclerViewAdapter(this, new ArrayList<Movie>());
         mRecyclerView.setAdapter(mAdapter);
 
@@ -72,15 +79,36 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
 
         mPage = 1;
-        final Activity activity = this;
-        Subscriber<Movies> moviesSubscriber = new Subscriber<Movies>() {
+
+        MovieService service = MovieService.getInstance();
+        MovieService.unsubscribe(mSubscription);
+        mSubscription = service.search(queryText, mLocale, mPage)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(getSubscriber());
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        MovieService.unsubscribe(mSubscription);
+    }
+
+    private Subscriber<Movies> getSubscriber(){
+        return new Subscriber<Movies>() {
             @Override
             public void onCompleted() {
             }
 
             @Override
             public void onError(Throwable e) {
-                Snackbar.make(activity.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
+                Snackbar.make(mRootView.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
                         .show();
             }
@@ -91,23 +119,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     mAdapter.Items = movies.results;
                     mAdapter.notifyDataSetChanged();
                 } else {
-                    Snackbar.make(activity.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
+                    Snackbar.make(mRootView.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
                             .setAction("Action", null)
                             .show();
                 }
             }
         };
-
-        MovieService service = new MovieService();
-        service.search2(queryText, mLocale, mPage)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(moviesSubscriber);        
-        return false;
     }
 
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        return false;
-    }
 }

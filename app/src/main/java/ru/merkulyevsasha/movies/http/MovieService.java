@@ -7,14 +7,15 @@ import java.io.IOException;
 
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Observable;
+import rx.Subscription;
+import rx.schedulers.Schedulers;
 
 import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
 import ru.merkulyevsasha.movies.models.Details;
 import ru.merkulyevsasha.movies.models.Movies;
-import rx.schedulers.Schedulers;
 
 public class MovieService {
 
@@ -22,7 +23,7 @@ public class MovieService {
 
     private MovieInterface movieInterface;
 
-    public MovieService(){
+    private MovieService(){
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd")
                 .create();
@@ -38,10 +39,17 @@ public class MovieService {
         movieInterface = retrofit.create(MovieInterface.class);
     }
 
-    public Movies latest(String language, int page) throws IOException {
-        Call<Movies> movies = movieInterface.latest(API_KEY, language);
-        Response<Movies> response = movies.execute();
-        return response.body();
+    // https://habrahabr.ru/post/27108/
+    private static volatile MovieService mInstance;
+    public static MovieService getInstance() {
+        if (mInstance == null) {
+            synchronized (MovieService.class) {
+                if (mInstance == null) {
+                    mInstance = new MovieService();
+                }
+            }
+        }
+        return mInstance;
     }
 
     public Movies popular(String language, int page) throws IOException {
@@ -49,19 +57,18 @@ public class MovieService {
         return movies.execute().body();
     }
 
-    public Movies search(String query, String language, int page) throws IOException {
-        Call<Movies> movies = movieInterface.search(query, API_KEY, language, page);
-        return movies.execute().body();
+    public Observable<Movies> search(String query, String language, int page) {
+        return movieInterface.search(query, API_KEY, language, page);
     }
 
-    public Observable<Movies> search2(String query, String language, int page) {
-        return movieInterface.search2(query, API_KEY, language, page);
+    public Observable<Details> details(int movie, String language) {
+        return movieInterface.details(movie, API_KEY, language);
     }
 
-
-    public Details details(int movie, String language, int page) throws IOException {
-        Call<Details> movies = movieInterface.details(movie, API_KEY, language, page);
-        return movies.execute().body();
+    public static void unsubscribe(Subscription subscription){
+        if (subscription != null && !subscription.isUnsubscribed()){
+            subscription.unsubscribe();
+        }
     }
 
 }
