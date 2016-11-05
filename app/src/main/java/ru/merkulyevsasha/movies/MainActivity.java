@@ -19,6 +19,7 @@ import java.util.Locale;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import ru.merkulyevsasha.movies.adapters.DownScrollListener;
 import ru.merkulyevsasha.movies.http.ImageService;
 import rx.Subscriber;
 import rx.Subscription;
@@ -35,6 +36,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private RecyclerViewAdapter mAdapter;
 
     private int mPage;
+    private String mQueryText;
+    private int mTotalResults;
+
     private String mLocale;
 
     @Bind(R.id.content_main)
@@ -43,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private Subscription mSubscription;
 
     private File mImageFolder;
+
+    private DownScrollListener mDownScrollListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +62,26 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         mLocale = Locale.getDefault().getLanguage();
 
         mImageFolder = new File(this.getFilesDir(), ImageService.MOVIES_IMAGES_FOLDER);
-        //mImageFolder = new File(Environment.getExternalStorageDirectory().getPath(), "MoviesImages");
         mImageFolder.mkdirs();
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        final GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
         mAdapter = new RecyclerViewAdapter(this, new ArrayList<Movie>());
         mRecyclerView.setAdapter(mAdapter);
+
+        mDownScrollListener = new DownScrollListener(layoutManager);
+
+        mDownScrollListener.LoadMore = new Runnable() {
+            @Override
+            public void run() {
+                mPage++;
+                search(mQueryText);
+            }
+        };
+
+        mRecyclerView.addOnScrollListener(mDownScrollListener);
 
     }
 
@@ -87,13 +104,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
 
         mPage = 1;
-
-        MovieService service = MovieService.getInstance();
-        MovieService.unsubscribe(mSubscription);
-        mSubscription = service.search(queryText, mLocale, mPage)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getSubscriber());
+        mQueryText = queryText;
+        search(mQueryText);
         return false;
     }
 
@@ -106,6 +118,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public void onDestroy(){
         super.onDestroy();
         MovieService.unsubscribe(mSubscription);
+    }
+
+    private void search(String queryText){
+        MovieService service = MovieService.getInstance();
+        MovieService.unsubscribe(mSubscription);
+        mSubscription = service.search(queryText, mLocale, mPage)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(getSubscriber());
     }
 
     private Subscriber<Movies> getSubscriber(){
@@ -124,7 +145,24 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             @Override
             public void onNext(Movies movies) {
                 if (movies.results.size() > 0) {
-                    mAdapter.Items = movies.results;
+
+                    if (mPage > 1){
+                        mPage++;
+                    }
+
+                    mDownScrollListener.mPage = mPage;
+                    mDownScrollListener.mTotalPages = movies.totalPages;
+                    mDownScrollListener.mTotalResults = movies.totalResults;
+                    mDownScrollListener.mPageSize = movies.totalResults >  DownScrollListener.PAGE_SIZE
+                    ? DownScrollListener.PAGE_SIZE
+                    : movies.totalResults;
+
+                    if (mPage > 1) {
+                        mAdapter.Items.addAll(movies.results);
+                        mDownScrollListener.mPageSize = mAdapter.Items.size();
+                    } else{
+                        mAdapter.Items = movies.results;
+                    }
                     mAdapter.notifyDataSetChanged();
                 } else {
                     Snackbar.make(mRootView.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)

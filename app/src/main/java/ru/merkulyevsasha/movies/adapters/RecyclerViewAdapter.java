@@ -87,6 +87,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
         DecimalFormat format = new DecimalFormat("#.#");
         holder.mtextVote.setText(format.format(vote));
+        holder.mImageView.setImageBitmap(null);
 
         final String backdropPath = Items.get(position).backdropPath;
         if (backdropPath != null && !backdropPath.isEmpty()) {
@@ -97,7 +98,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 Bitmap bMap = BitmapFactory.decodeFile(imageFile.getPath());
                 holder.mImageView.setImageBitmap(bMap);
             } else {
-                //holder.mImageView.setTag(R.id.imageView, imageFileName);
+                holder.mImageView.setTag(R.id.imageView, backdropPath);
 
                 ImageService service = ImageService.getInstance();
                 service.getImage(ImageService.W_780, imageFileName, mLocale)
@@ -107,9 +108,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                                 if (response.isSuccessful()) {
                                     if (ImageService.DownloadImage(imageFile, response.body())) {
                                         Bitmap bMap = BitmapFactory.decodeFile(imageFile.getPath());
-                                        //if (holder.mImageView.getTag(R.id.imageView).equals(imageFileName)) {
+                                        if (holder.mImageView.getTag(R.id.imageView).equals(backdropPath)) {
                                             holder.mImageView.setImageBitmap(bMap);
-                                        //}
+                                        }
                                     }
                                 }
                             }
