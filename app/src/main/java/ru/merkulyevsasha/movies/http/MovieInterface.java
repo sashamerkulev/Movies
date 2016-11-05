@@ -12,9 +12,6 @@ import ru.merkulyevsasha.movies.models.Movies;
 
 public interface MovieInterface {
 
-    @GET("movie/{request}")
-    Call<Movies> movies(@Path("request") String request, @Query("api_key") String api, @Query("language") String language, @Query("page") int page);
-
     @GET("search/movie")
     Observable<Movies> search(@Query("query") String query, @Query("api_key") String api, @Query("language") String language, @Query("page") int page);
 

@@ -12,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.firebase.crash.FirebaseCrash;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -19,14 +21,14 @@ import java.util.Locale;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-import ru.merkulyevsasha.movies.adapters.DownScrollListener;
-import ru.merkulyevsasha.movies.http.ImageService;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import ru.merkulyevsasha.movies.adapters.RecyclerViewAdapter;
+import ru.merkulyevsasha.movies.adapters.DownScrollListener;
+import ru.merkulyevsasha.movies.http.ImageService;
 import ru.merkulyevsasha.movies.http.MovieService;
 import ru.merkulyevsasha.movies.models.Movie;
 import ru.merkulyevsasha.movies.models.Movies;
@@ -37,7 +39,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private int mPage;
     private String mQueryText;
-    private int mTotalResults;
 
     private String mLocale;
 
@@ -137,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             @Override
             public void onError(Throwable e) {
+                FirebaseCrash.report(e);
                 Snackbar.make(mRootView.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
                         .show();
@@ -145,10 +147,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             @Override
             public void onNext(Movies movies) {
                 if (movies.results.size() > 0) {
-
-                    if (mPage > 1){
-                        mPage++;
-                    }
 
                     mDownScrollListener.mPage = mPage;
                     mDownScrollListener.mTotalPages = movies.totalPages;

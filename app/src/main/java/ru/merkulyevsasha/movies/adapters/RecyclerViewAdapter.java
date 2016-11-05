@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.crash.FirebaseCrash;
+
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Calendar;
@@ -39,7 +41,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Items = items;
         mActivity = activity;
         File imageFolder = new File(activity.getFilesDir(), ImageService.MOVIES_IMAGES_FOLDER);
-        mImageFolder= new File(imageFolder, ImageService.W_780);
+        mImageFolder= new File(imageFolder, ImageService.W_300);
         mImageFolder.mkdirs();
         mLocale = Locale.getDefault().getLanguage();
     }
@@ -82,6 +84,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 holder.mTextYear.setText(String.valueOf(year));
             }
             catch(Exception e){
+                FirebaseCrash.report(e);
                 e.printStackTrace();
             }
         }
@@ -101,7 +104,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 holder.mImageView.setTag(R.id.imageView, backdropPath);
 
                 ImageService service = ImageService.getInstance();
-                service.getImage(ImageService.W_780, imageFileName, mLocale)
+                service.getImage(ImageService.W_300, imageFileName, mLocale)
                         .enqueue(new Callback<ResponseBody>() {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -117,7 +120,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                             @Override
                             public void onFailure(Call<ResponseBody> call, Throwable t) {
-
+                                FirebaseCrash.report(t);
                             }
                         });
 

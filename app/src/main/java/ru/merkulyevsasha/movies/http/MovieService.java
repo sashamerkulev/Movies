@@ -52,11 +52,6 @@ public class MovieService {
         return mInstance;
     }
 
-    public Movies popular(String language, int page) throws IOException {
-        Call<Movies> movies = movieInterface.movies("popular", API_KEY, language, page);
-        return movies.execute().body();
-    }
-
     public Observable<Movies> search(String query, String language, int page) {
         return movieInterface.search(query, API_KEY, language, page);
     }
