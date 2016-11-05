@@ -6,3 +6,4 @@
 - RxJava
 - Retrofit2
 
+А также Firebase Crash Reporting.
