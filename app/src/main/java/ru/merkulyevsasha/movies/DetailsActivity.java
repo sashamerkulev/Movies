@@ -32,6 +32,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import ru.merkulyevsasha.movies.helpers.DisplayHelper;
 import ru.merkulyevsasha.movies.http.ImageService;
 import ru.merkulyevsasha.movies.models.Dict;
 import rx.Observable;
@@ -88,6 +89,7 @@ public class DetailsActivity extends AppCompatActivity {
     private String mBackdropPath;
     private String mHomePage;
 
+    private String mImageWidth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +102,9 @@ public class DetailsActivity extends AppCompatActivity {
 
         mLocale = Locale.getDefault().getLanguage();
 
+        mImageWidth = DisplayHelper.getDetailsActivityImageWidth(this);
         File imageFolder = new File(this.getFilesDir(), ImageService.MOVIES_IMAGES_FOLDER);
-        mImageFolder= new File(imageFolder, ImageService.W_1280);
+        mImageFolder= new File(imageFolder, mImageWidth);
         mImageFolder.mkdirs();
 
         Intent intent = getIntent();
@@ -142,10 +145,8 @@ public class DetailsActivity extends AppCompatActivity {
 
             bindOnClickHomeButtonIfHomePageIsExists(mHomePage);
 
-            final String imageFileName = mBackdropPath.substring(1);
-            final File imageFile = new File(mImageFolder, imageFileName);
+            final File imageFile = new File(mImageFolder, mBackdropPath);
             final ImageView image = (ImageView) findViewById(R.id.picture);
-
             if (imageFile.exists()) {
                 setImageBitmap(imageFile, image);
             }
@@ -207,16 +208,15 @@ public class DetailsActivity extends AppCompatActivity {
 
                     mBackdropPath = details.backdropPath;
                     if (mBackdropPath != null && !mBackdropPath.isEmpty()) {
-                        mBackdropPath = mBackdropPath.substring(1);
-                        final String imageFileName = mBackdropPath.substring(1);
-                        final File imageFile = new File(mImageFolder, imageFileName);
+                        mBackdropPath = mBackdropPath.substring(1); // remove slash
+                        final File imageFile = new File(mImageFolder, mBackdropPath);
                         final ImageView image = (ImageView) findViewById(R.id.picture);
 
                         if (imageFile.exists()) {
                             setImageBitmap(imageFile, image);
                         } else {
                             ImageService service = ImageService.getInstance();
-                            service.getImage(ImageService.W_1280, imageFileName, mLocale)
+                            service.getImage(mImageWidth, mBackdropPath, mLocale)
                                     .enqueue(new Callback<ResponseBody>() {
                                         @Override
                                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
