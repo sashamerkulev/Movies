@@ -2,6 +2,8 @@ package ru.merkulyevsasha.movies.adapters;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,23 +11,37 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.merkulyevsasha.movies.DetailsActivity;
 import ru.merkulyevsasha.movies.R;
+import ru.merkulyevsasha.movies.http.ImageService;
 import ru.merkulyevsasha.movies.models.Movie;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ItemViewHolder>{
 
+
     private Activity mActivity;
     public List<Movie> Items;
+    private File mImageFolder;
+    private String mLocale;
 
     public RecyclerViewAdapter(Activity activity, List<Movie> items){
         Items = items;
         mActivity = activity;
+        File imageFolder = new File(activity.getFilesDir(), ImageService.MOVIES_IMAGES_FOLDER);
+        mImageFolder= new File(imageFolder, ImageService.W_780);
+        mImageFolder.mkdirs();
+        mLocale = Locale.getDefault().getLanguage();
     }
 
     @Override
@@ -44,7 +60,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     @Override
-    public void onBindViewHolder(ItemViewHolder holder, int position) {
+    public void onBindViewHolder(final ItemViewHolder holder, int position) {
         String caption = Items.get(position).originalTitle.trim();
         String description = Items.get(position).overview;
         double vote = Items.get(position).voteAverage;
@@ -71,6 +87,42 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
         DecimalFormat format = new DecimalFormat("#.#");
         holder.mtextVote.setText(format.format(vote));
+
+        final String backdropPath = Items.get(position).backdropPath;
+        if (backdropPath != null && !backdropPath.isEmpty()) {
+            final String imageFileName = backdropPath.substring(1);
+            final File imageFile = new File(mImageFolder, imageFileName);
+
+            if (imageFile.exists()) {
+                Bitmap bMap = BitmapFactory.decodeFile(imageFile.getPath());
+                holder.mImageView.setImageBitmap(bMap);
+            } else {
+                //holder.mImageView.setTag(R.id.imageView, imageFileName);
+
+                ImageService service = ImageService.getInstance();
+                service.getImage(ImageService.W_780, imageFileName, mLocale)
+                        .enqueue(new Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                if (response.isSuccessful()) {
+                                    if (ImageService.DownloadImage(imageFile, response.body())) {
+                                        Bitmap bMap = BitmapFactory.decodeFile(imageFile.getPath());
+                                        //if (holder.mImageView.getTag(R.id.imageView).equals(imageFileName)) {
+                                            holder.mImageView.setImageBitmap(bMap);
+                                        //}
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                            }
+                        });
+
+            }
+        }
+
     }
 
     @Override
@@ -91,6 +143,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             mTextCaption = (TextView)itemView.findViewById(R.id.textCaption);
             mTextDescription = (TextView)itemView.findViewById(R.id.textDescription);
             mTextYear = (TextView)itemView.findViewById(R.id.textYear);
+            mImageView = (ImageView)itemView.findViewById(R.id.imageView);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

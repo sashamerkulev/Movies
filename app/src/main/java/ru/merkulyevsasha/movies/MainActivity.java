@@ -12,12 +12,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import ru.merkulyevsasha.movies.http.ImageService;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -40,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private Subscription mSubscription;
 
+    private File mImageFolder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +54,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         setSupportActionBar(toolbar);
 
         mLocale = Locale.getDefault().getLanguage();
+
+        mImageFolder = new File(this.getFilesDir(), ImageService.MOVIES_IMAGES_FOLDER);
+        //mImageFolder = new File(Environment.getExternalStorageDirectory().getPath(), "MoviesImages");
+        mImageFolder.mkdirs();
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);

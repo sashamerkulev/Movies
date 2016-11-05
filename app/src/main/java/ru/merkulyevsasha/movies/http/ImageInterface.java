@@ -1,14 +1,13 @@
 package ru.merkulyevsasha.movies.http;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-import rx.Observable;
-
-import ru.merkulyevsasha.movies.models.Movies;
-
 public interface ImageInterface {
-    @GET("t/{size}/{path}")
-    Observable<byte[]> image(@Path("size") String size, @Path("path") String path, @Query("language") String language);
+
+    @GET("t/p/{size}/{imagePath}")
+    Call<ResponseBody> getImage(@Path("size") String size, @Path("imagePath") String path, @Query("language") String language);
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Фильмо поиск</string>
+    <string name="app_name">Фильмопоиск</string>
     <string name="search_validation_message">Строка поиска должна содержать не менее 5 символов.</string>
     <string name="search_nofound_message">Ничего не найдено, попробуйте изменить строку поиска.</string>
     <string name="details_error_message">Ошибка чтения информации о фильме.</string>
