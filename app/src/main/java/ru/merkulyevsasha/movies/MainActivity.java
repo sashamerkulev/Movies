@@ -1,6 +1,8 @@
 package ru.merkulyevsasha.movies;
 
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +10,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Bind(R.id.content_main)
     public View mRootView;
+
+    private SearchView mSearchView;
 
     private Subscription mSubscription;
 
@@ -87,11 +92,25 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+
+        savedInstanceState.putString("mQueryText", mQueryText);
+        savedInstanceState.putInt("mPage", mPage);
+
+        //savedInstanceState.putParcelableArray("contact", mAdapter.Items);
+
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setOnQueryTextListener(this);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        mSearchView.setOnQueryTextListener(this);
+
+        hideSearchBar(false);
+
         return true;
     }
 
@@ -106,8 +125,24 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         mPage = 1;
         mQueryText = queryText;
+
+        hideSearchBar(true);
+
+        setTitle(getActivityTitle());
+
         search(mQueryText);
         return false;
+    }
+
+    private void hideSearchBar(boolean hide){
+        mSearchView.setIconified(hide);
+        if (hide){
+            mSearchView.onActionViewCollapsed();
+        }
+    }
+
+    private String getActivityTitle(){
+        return getString(R.string.app_name) +  ": \""+mQueryText+"\"";
     }
 
     @Override
