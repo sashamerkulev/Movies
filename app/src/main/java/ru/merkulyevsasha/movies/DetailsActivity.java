@@ -274,11 +274,6 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
-    @Override
     public void onDestroy(){
         super.onDestroy();
         MovieService.unsubscribe(mSubscription);

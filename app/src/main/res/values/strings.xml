@@ -5,4 +5,7 @@
     <string name="details_error_message">Ошибка чтения информации о фильме.</string>
     <string name="genres">Жанры</string>
     <string name="countries">Страны</string>
+    <string name="back_button_description">Вернуться</string>
+    <string name="movie_poster">Плакат фильма</string>
+    <string name="go_to_homepage_button_message">На страницу</string>
 </resources>

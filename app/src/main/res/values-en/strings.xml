@@ -6,4 +6,7 @@
     <string name="details_error_message">Error reading movie information.</string>
     <string name="genres">Genres</string>
     <string name="countries">Countries</string>
+    <string name="back_button_description">Back button</string>
+    <string name="movie_poster">Movie poster</string>
+    <string name="go_to_homepage_button_message">Go to homepage</string>
 </resources>

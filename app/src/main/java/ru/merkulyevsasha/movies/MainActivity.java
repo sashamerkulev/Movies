@@ -50,8 +50,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private Subscription mSubscription;
 
-    private File mImageFolder;
-
     private DownScrollListener mDownScrollListener;
 
     private GridLayoutManager mLayoutManager;
@@ -70,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         mLocale = Locale.getDefault().getLanguage();
 
-        mImageFolder = new File(this.getFilesDir(), ImageService.MOVIES_IMAGES_FOLDER);
+        File mImageFolder = new File(this.getFilesDir(), ImageService.MOVIES_IMAGES_FOLDER);
         mImageFolder.mkdirs();
 
         mLayoutManager = new GridLayoutManager(this, 2);
@@ -111,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             int visibleItemPosition = savedInstanceState.getInt("visibleItemPosition");
             ArrayList movies = savedInstanceState.getParcelableArrayList("movies");
-            if (movies.size() > 0){
+            if (movies != null && movies.size() > 0){
                 mAdapter.Items = movies;
                 mAdapter.notifyDataSetChanged();
                 mRecyclerView.scrollToPosition(visibleItemPosition);

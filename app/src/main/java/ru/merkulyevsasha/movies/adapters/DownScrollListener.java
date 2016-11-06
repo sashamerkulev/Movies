@@ -7,9 +7,6 @@ public class DownScrollListener extends RecyclerView.OnScrollListener {
 
     public final static int PAGE_SIZE = 20;
 
-    private final int DOWN = 1;
-    private final int UP = 1;
-
     private int mVisibleThreshold = 0;
     private int mLastVisibleItemPosition = 0;
     private int mScrollDirection=0;
@@ -21,7 +18,7 @@ public class DownScrollListener extends RecyclerView.OnScrollListener {
 
     public Runnable LoadMore;
 
-    RecyclerView.LayoutManager mLayoutManager;
+    private final RecyclerView.LayoutManager mLayoutManager;
 
     public DownScrollListener(RecyclerView.LayoutManager layoutManager){
 
@@ -35,6 +32,9 @@ public class DownScrollListener extends RecyclerView.OnScrollListener {
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        final int DOWN = 1;
+        final int UP = 1;
+
         int visibleItemPosition = ((GridLayoutManager)mLayoutManager).findLastVisibleItemPosition();
 
         mScrollDirection = visibleItemPosition > mLastVisibleItemPosition

@@ -18,7 +18,7 @@ public class MovieService {
 
     private final String API_KEY = "cb3669160734c367b5275ff3ea5ae417";
 
-    private MovieInterface movieInterface;
+    private final MovieInterface movieInterface;
 
     private MovieService(){
         Gson gson = new GsonBuilder()

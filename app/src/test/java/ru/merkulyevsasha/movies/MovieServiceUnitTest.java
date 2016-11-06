@@ -3,10 +3,6 @@ package ru.merkulyevsasha.movies;
 import org.junit.Test;
 
 import ru.merkulyevsasha.movies.http.MovieService;
-import ru.merkulyevsasha.movies.models.Details;
-import ru.merkulyevsasha.movies.models.Movies;
-
-import static org.junit.Assert.*;
 
 /**
  * Example local unit test, which will execute on the development machine (host).

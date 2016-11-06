@@ -20,7 +20,7 @@ public class ImageService {
     public final static String W_1280 = "w1280";
     public final static String W_300 = "w300";
 
-    private ImageInterface mInterface;
+    private final ImageInterface mInterface;
 
     private ImageService(){
 

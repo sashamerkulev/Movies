@@ -20,7 +20,7 @@ public class DisplayHelper {
     public static String getMainActivityImageWidth(Activity activity){
         DisplayMetrics dm = getDisplayMetrics(activity);
 
-        String width = "";
+        String width;
         if (dm.widthPixels < 800)
             width = ImageService.W_300;
         else if (dm.widthPixels < 1500)
@@ -34,7 +34,7 @@ public class DisplayHelper {
     public static String getDetailsActivityImageWidth(Activity activity){
         DisplayMetrics dm = getDisplayMetrics(activity);
 
-        String width = "";
+        String width;
         if (dm.widthPixels < 800)
             width = ImageService.W_780;
         else

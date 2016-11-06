@@ -33,11 +33,11 @@ import ru.merkulyevsasha.movies.models.Movie;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ItemViewHolder>{
 
 
-    private Activity mActivity;
+    private final Activity mActivity;
     public List<Movie> Items;
-    private File mImageFolder;
-    private String mLocale;
-    private String mImageWidth;
+    private final File mImageFolder;
+    private final String mLocale;
+    private final String mImageWidth;
 
     public RecyclerViewAdapter(Activity activity, List<Movie> items){
         Items = items;
@@ -53,7 +53,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_item, parent, false);
-        ItemViewHolder holder = new ItemViewHolder(view, new OnClickListener() {
+        return new ItemViewHolder(view, new OnClickListener() {
             @Override
             public void onItemClick(View v, int position) {
                 Intent detailsIntent = new Intent(mActivity, DetailsActivity.class);
@@ -62,7 +62,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 mActivity.startActivity(detailsIntent);
             }
         });
-        return holder;
     }
 
     @Override
@@ -72,7 +71,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         double vote = Items.get(position).voteAverage;
         Date date = Items.get(position).releaseDate;
 
-        holder.mTextCaption.setText(caption == null ? "" : caption);
+        holder.mTextCaption.setText(caption);
 
         if (description != null && description.length() > 50){
             description = description.substring(0, 50);
@@ -139,11 +138,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder{
-        private ImageView mImageView;
-        private TextView mtextVote;
-        private TextView mTextCaption;
-        private TextView mTextDescription;
-        private TextView mTextYear;
+        private final ImageView mImageView;
+        private final TextView mtextVote;
+        private final TextView mTextCaption;
+        private final TextView mTextDescription;
+        private final TextView mTextYear;
 
         public ItemViewHolder(View itemView, final OnClickListener clickListener) {
             super(itemView);
@@ -156,7 +155,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    clickListener.onItemClick(v, getPosition());
+                    clickListener.onItemClick(v, getAdapterPosition());
                 }
             });
         }

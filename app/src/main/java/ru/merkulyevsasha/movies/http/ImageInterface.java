@@ -6,7 +6,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-public interface ImageInterface {
+interface ImageInterface {
 
     @GET("t/p/{size}/{imagePath}")
     Call<ResponseBody> getImage(@Path("size") String size, @Path("imagePath") String path, @Query("language") String language);

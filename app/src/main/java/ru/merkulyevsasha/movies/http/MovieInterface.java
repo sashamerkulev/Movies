@@ -9,7 +9,7 @@ import rx.Observable;
 import ru.merkulyevsasha.movies.models.Details;
 import ru.merkulyevsasha.movies.models.Movies;
 
-public interface MovieInterface {
+interface MovieInterface {
 
     @GET("search/movie")
     Observable<Movies> search(@Query("query") String query, @Query("api_key") String api, @Query("language") String language, @Query("page") int page);
