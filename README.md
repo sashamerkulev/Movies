@@ -15,7 +15,7 @@
 
 Для загрузки списка фильмов и детальной информации о фильме используется возможности поддержки Retrofit2-ом RxJava:
 
-'''java
+```java
 
 interface MovieInterface {
     @GET("search/movie")
@@ -24,11 +24,10 @@ interface MovieInterface {
     Observable<Details> details(@Path("movie") int movie, @Query("api_key") String api, @Query("language") String language);
 }
 
-'''
+```
 
 В свзяи с этим работа по загрузке данных становится совсем простой:
-
-'''java
+```java
 
     MovieService service = MovieService.getInstance();
         mSubscription = service.search(queryText, mLocale, mPage)
@@ -36,11 +35,11 @@ interface MovieInterface {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(getSubscriber());
 
-'''
+```
 
 Для загрузки изображений, тоже используется Retrofit2, но другим способом:
 
-'''java
+```java
 
 interface ImageInterface {
     @GET("t/p/{size}/{imagePath}")
@@ -65,15 +64,15 @@ interface ImageInterface {
             }
         });
         
-'''
+```
 
 # Подключение Retrofit2 и RxJava
 
-'''
+```
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.squareup.okhttp:logging-interceptor:2.7.0'
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'io.reactivex:rxandroid:1.2.1'
-'''
+```
