@@ -22,9 +22,9 @@ public class Movie implements Parcelable{
     @SerializedName("release_date")
     @Expose
     public Date releaseDate;
-    @SerializedName("genre_ids")
-    @Expose
-    public List<Integer> genreIds;
+//    @SerializedName("genre_ids")
+//    @Expose
+//    public List<Integer> genreIds;
     @SerializedName("id")
     @Expose
     public int id;

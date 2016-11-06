@@ -136,7 +136,7 @@ public class DetailsActivity extends AppCompatActivity {
             mGenres.setText(mGenresText);
             mCountries.setText(mProductionCountries);
 
-            bindOnClickHomeButtonIfHomePageIsExists(mHomePage);
+            bindOnClickHomeButtonIfHomePageExists(mHomePage);
 
             final File imageFile = new File(mImageFolder, mBackdropPath);
             final ImageView image = (ImageView) findViewById(R.id.picture);
@@ -197,7 +197,7 @@ public class DetailsActivity extends AppCompatActivity {
                     mCountries.setText(joinDicts(details.productionCountries));
 
                     mHomePage = details.homepage;
-                    bindOnClickHomeButtonIfHomePageIsExists(mHomePage);
+                    bindOnClickHomeButtonIfHomePageExists(mHomePage);
 
                     mBackdropPath = details.backdropPath;
                     if (mBackdropPath != null && !mBackdropPath.isEmpty()) {
@@ -237,7 +237,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     }
 
-    private void bindOnClickHomeButtonIfHomePageIsExists(final String homePage){
+    private void bindOnClickHomeButtonIfHomePageExists(final String homePage){
         if (homePage == null || homePage.isEmpty()){
             mButtonHome.setVisibility(View.GONE);
         } else{

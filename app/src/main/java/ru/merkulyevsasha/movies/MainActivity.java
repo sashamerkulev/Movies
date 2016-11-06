@@ -1,8 +1,6 @@
 package ru.merkulyevsasha.movies;
 
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.os.PersistableBundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +8,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private int mPage;
     private String mQueryText;
+    private String mNewQueryText;
 
     private String mLocale;
 
@@ -55,6 +53,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private File mImageFolder;
 
     private DownScrollListener mDownScrollListener;
+
+    private GridLayoutManager mLayoutManager;
+
+    @Bind(R.id.recyclerView)
+    public RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,14 +73,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         mImageFolder = new File(this.getFilesDir(), ImageService.MOVIES_IMAGES_FOLDER);
         mImageFolder.mkdirs();
 
-        final GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
-        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        mRecyclerView.setLayoutManager(layoutManager);
+        mLayoutManager = new GridLayoutManager(this, 2);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
         mAdapter = new RecyclerViewAdapter(this, new ArrayList<Movie>());
         mRecyclerView.setAdapter(mAdapter);
 
-        mDownScrollListener = new DownScrollListener(layoutManager);
+        mDownScrollListener = new DownScrollListener(mLayoutManager);
 
         mDownScrollListener.LoadMore = new Runnable() {
             @Override
@@ -89,6 +91,33 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         mRecyclerView.addOnScrollListener(mDownScrollListener);
 
+        if (savedInstanceState != null){
+            mQueryText = savedInstanceState.getString("mQueryText");
+            if (mQueryText != null && !mQueryText.isEmpty()) {
+                setTitle(getActivityTitle());
+            }
+
+            mNewQueryText = savedInstanceState.getString("mNewQueryText");
+            if (mNewQueryText != null && !mNewQueryText.isEmpty()){
+                hideSearchBar(false);
+                mSearchView.setQuery(mNewQueryText, false);
+            }
+
+            mPage = savedInstanceState.getInt("mPage");
+            mDownScrollListener.mTotalPages = savedInstanceState.getInt("mTotalPages");
+            mDownScrollListener.mTotalResults = savedInstanceState.getInt("mTotalResults");
+            mDownScrollListener.mPageSize = savedInstanceState.getInt("mPageSize");
+            mDownScrollListener.mPage = mPage;
+
+            int visibleItemPosition = savedInstanceState.getInt("visibleItemPosition");
+            ArrayList movies = savedInstanceState.getParcelableArrayList("movies");
+            if (movies.size() > 0){
+                mAdapter.Items = movies;
+                mAdapter.notifyDataSetChanged();
+                mRecyclerView.scrollToPosition(visibleItemPosition);
+            }
+        }
+
     }
 
     @Override
@@ -96,9 +125,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         super.onSaveInstanceState(savedInstanceState);
 
         savedInstanceState.putString("mQueryText", mQueryText);
+        savedInstanceState.putString("mNewQueryText", mNewQueryText);
         savedInstanceState.putInt("mPage", mPage);
 
-        //savedInstanceState.putParcelableArray("contact", mAdapter.Items);
+        savedInstanceState.putInt("mTotalPages", mDownScrollListener.mTotalPages);
+        savedInstanceState.putInt("mTotalResults", mDownScrollListener.mTotalResults);
+        savedInstanceState.putInt("mPageSize", mDownScrollListener.mPageSize);
+
+        savedInstanceState.putInt("visibleItemPosition", mLayoutManager.findFirstCompletelyVisibleItemPosition());
+
+        savedInstanceState.putParcelableArrayList("movies", (ArrayList)mAdapter.Items);
 
     }
 
@@ -116,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextSubmit(final String queryText) {
-        if (queryText.length() < 5) {
+        if (queryText.length() < 3) {
             Snackbar.make(this.findViewById(R.id.content_main), R.string.search_validation_message, Snackbar.LENGTH_LONG)
                     .setAction("Action", null)
                     .show();
@@ -124,11 +160,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
 
         mPage = 1;
+        mNewQueryText = "";
         mQueryText = queryText;
 
         hideSearchBar(true);
-
-        setTitle(getActivityTitle());
 
         search(mQueryText);
         return false;
@@ -138,6 +173,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         mSearchView.setIconified(hide);
         if (hide){
             mSearchView.onActionViewCollapsed();
+        } else {
+            mSearchView.onActionViewExpanded();
         }
     }
 
@@ -147,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextChange(String newText) {
+        mNewQueryText = newText;
         return false;
     }
 
@@ -197,6 +235,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                         mAdapter.Items = movies.results;
                     }
                     mAdapter.notifyDataSetChanged();
+                    mRecyclerView.scrollToPosition(0);
+
+                    setTitle(getActivityTitle());
+
                 } else {
                     Snackbar.make(mRootView.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
                             .setAction("Action", null)

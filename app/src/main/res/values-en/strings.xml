@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Movie searcher</string>
-    <string name="search_validation_message">Search text should be at least five chars.</string>
+    <string name="search_validation_message">Search text should be at least three chars.</string>
     <string name="search_nofound_message">Nothing found, try to change search text.</string>
     <string name="details_error_message">Error reading movie information.</string>
     <string name="genres">Genres</string>
