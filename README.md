@@ -18,7 +18,6 @@
 interface MovieInterface {
     @GET("search/movie")
     Observable<Movies> search(@Query("query") String query, @Query("api_key") String api, @Query("language") String language, @Query("page") int page);
-
     @GET("movie/{movie}")
     Observable<Details> details(@Path("movie") int movie, @Query("api_key") String api, @Query("language") String language);
 }
@@ -37,7 +36,6 @@ interface MovieInterface {
 Для загрузки изображений, тоже используется Retrofit2, но другим способом:
 
 '''java
-
 interface ImageInterface {
     @GET("t/p/{size}/{imagePath}")
     Call<ResponseBody> getImage(@Path("size") String size, @Path("imagePath") String path, @Query("language") String language);
