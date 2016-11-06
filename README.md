@@ -26,14 +26,14 @@ interface MovieInterface {
 
 В свзяи с этим работа по загрузке данных становится совсем простой:
 ```java
-    MovieService service = MovieService.getInstance();
-        mSubscription = service.search(queryText, mLocale, mPage)
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(getSubscriber());
+MovieService service = MovieService.getInstance();
+mSubscription = service.search(queryText, mLocale, mPage)
+    .subscribeOn(Schedulers.newThread())
+    .observeOn(AndroidSchedulers.mainThread())
+    .subscribe(getSubscriber());
 ```
 
-Для загрузки изображений, тоже используется Retrofit2, но другим способом:
+Для загрузки изображений, также используется Retrofit2, но другим способом:
 
 ```java
 interface ImageInterface {
@@ -67,6 +67,7 @@ interface ImageInterface {
     compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.squareup.okhttp:logging-interceptor:2.7.0'
+    
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'io.reactivex:rxandroid:1.2.1'
 ```
