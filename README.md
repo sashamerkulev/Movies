@@ -6,4 +6,4 @@
 - RxJava
 - Retrofit2
 
-А также Firebase Crash Reporting.
+А также Firebase Crash Reporting service (файл с настройками google-services.json, я не выкладывал :)).
