@@ -231,9 +231,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                         mDownScrollListener.mPageSize = mAdapter.Items.size();
                     } else{
                         mAdapter.Items = movies.results;
+                        mRecyclerView.scrollToPosition(0);
                     }
                     mAdapter.notifyDataSetChanged();
-                    mRecyclerView.scrollToPosition(0);
 
                     setTitle(getActivityTitle());
 
