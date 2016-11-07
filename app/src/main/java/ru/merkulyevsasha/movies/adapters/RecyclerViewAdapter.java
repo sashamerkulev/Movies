@@ -15,6 +15,8 @@ import com.google.firebase.crash.FirebaseCrash;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -64,12 +66,25 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         });
     }
 
+    private boolean tryParseDateFormat(final String stringDate, final String formatDate, Date date){
+        try{
+            SimpleDateFormat format = new SimpleDateFormat(formatDate, Locale.ENGLISH);
+            date = format.parse(stringDate);
+            return true;
+        }
+        catch(ParseException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
     @Override
     public void onBindViewHolder(final ItemViewHolder holder, int position) {
         String caption = Items.get(position).originalTitle.trim();
         String description = Items.get(position).overview;
-        double vote = Items.get(position).voteAverage;
-        Date date = Items.get(position).releaseDate;
+        String stringVote = Items.get(position).voteAverage;
+        String stringDate = Items.get(position).releaseDate;
 
         holder.mTextCaption.setText(caption);
 
@@ -79,8 +94,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         holder.mTextDescription.setText(description == null ? "" : description);
 
-        if (date != null) {
+        if (stringDate != null && !stringDate.isEmpty()) {
             try {
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                Date date = format.parse(stringDate);
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(date);
                 int year = calendar.get(Calendar.YEAR);
@@ -91,8 +108,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 e.printStackTrace();
             }
         }
-        DecimalFormat format = new DecimalFormat("#.#");
-        holder.mtextVote.setText(format.format(vote));
+
+        if (stringVote != null && !stringVote.isEmpty()) {
+            try {
+                double vode = Double.parseDouble(stringVote);
+                DecimalFormat format = new DecimalFormat("#.#");
+                holder.mtextVote.setText(format.format(vode));
+            }
+            catch(Exception e){
+                FirebaseCrash.report(e);
+            }
+        }
         holder.mImageView.setImageBitmap(null);
 
         final String backdropPath = Items.get(position).backdropPath;

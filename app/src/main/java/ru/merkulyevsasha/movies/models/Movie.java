@@ -6,8 +6,6 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
-
 public class Movie implements Parcelable{
     @SerializedName("poster_path")
     @Expose
@@ -20,7 +18,7 @@ public class Movie implements Parcelable{
     public String overview;
     @SerializedName("release_date")
     @Expose
-    public Date releaseDate;
+    public String releaseDate;
 //    @SerializedName("genre_ids")
 //    @Expose
 //    public List<Integer> genreIds;
@@ -41,16 +39,16 @@ public class Movie implements Parcelable{
     public String backdropPath;
     @SerializedName("popularity")
     @Expose
-    public double popularity;
+    public String popularity;
     @SerializedName("vote_count")
     @Expose
-    public int voteCount;
+    public String voteCount;
     @SerializedName("video")
     @Expose
     public boolean video;
     @SerializedName("vote_average")
     @Expose
-    public double voteAverage;
+    public String voteAverage;
 
     protected Movie(Parcel in) {
         posterPath = in.readString();
@@ -61,10 +59,10 @@ public class Movie implements Parcelable{
         originalLanguage = in.readString();
         title = in.readString();
         backdropPath = in.readString();
-        popularity = in.readDouble();
-        voteCount = in.readInt();
+        popularity = in.readString();
+        voteCount = in.readString();
         video = in.readByte() != 0;
-        voteAverage = in.readDouble();
+        voteAverage = in.readString();
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -94,9 +92,9 @@ public class Movie implements Parcelable{
         parcel.writeString(originalLanguage);
         parcel.writeString(title);
         parcel.writeString(backdropPath);
-        parcel.writeDouble(popularity);
-        parcel.writeInt(voteCount);
+        parcel.writeString(popularity);
+        parcel.writeString(voteCount);
         parcel.writeByte((byte) (video ? 1 : 0));
-        parcel.writeDouble(voteAverage);
+        parcel.writeString(voteAverage);
     }
 }

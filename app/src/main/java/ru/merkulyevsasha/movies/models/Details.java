@@ -3,7 +3,6 @@ package ru.merkulyevsasha.movies.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
 import java.util.List;
 
 public class Details {
@@ -55,7 +54,7 @@ public class Details {
     public List<Dict> productionCountries;
     @SerializedName("release_date")
     @Expose
-    public Date releaseDate;
+    public String releaseDate;
     @SerializedName("revenue")
     @Expose
     public double revenue;
@@ -79,7 +78,7 @@ public class Details {
     public boolean video;
     @SerializedName("vote_average")
     @Expose
-    public double voteAverage;
+    public String voteAverage;
     @SerializedName("vote_count")
     @Expose
     public int voteCount;

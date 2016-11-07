@@ -189,9 +189,17 @@ public class DetailsActivity extends AppCompatActivity {
                     mTagline.setText(details.tagline);
                     mDescription.setText(details.overview);
 
-                    DecimalFormat format = new DecimalFormat("#.#");
-                    mVoteAverage = format.format(details.voteAverage);
-                    mVote.setText(mVoteAverage);
+                    if (details.voteAverage != null && !details.voteAverage.isEmpty()) {
+                        try {
+                            double vode = Double.parseDouble(details.voteAverage);
+                            DecimalFormat format = new DecimalFormat("#.#");
+                            mVoteAverage = format.format(vode);
+                            mVote.setText(mVoteAverage);
+                        }
+                        catch(Exception e){
+                            FirebaseCrash.report(e);
+                        }
+                    }
 
                     mGenres.setText(joinDicts(details.genres));
                     mCountries.setText(joinDicts(details.productionCountries));
