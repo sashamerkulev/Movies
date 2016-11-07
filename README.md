@@ -43,33 +43,33 @@ interface ImageInterface {
     Call<ResponseBody> getImage(@Path("size") String size, @Path("imagePath") String path, @Query("language") String language);
 }
 
-    ImageService service = ImageService.getInstance();
-    service.getImage(mImageWidth, mBackdropPath, mLocale)
-        .enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    if (ImageService.DownloadImage(imageFile, response.body())) {
-                        setImageBitmap(imageFile, image);
-                    }
+ImageService service = ImageService.getInstance();
+service.getImage(mImageWidth, mBackdropPath, mLocale)
+    .enqueue(new Callback<ResponseBody>() {
+        @Override
+        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            if (response.isSuccessful()) {
+                if (ImageService.DownloadImage(imageFile, response.body())) {
+                    setImageBitmap(imageFile, image);
                 }
             }
+        }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                FirebaseCrash.report(t);
-            }
-        });
+        @Override
+        public void onFailure(Call<ResponseBody> call, Throwable t) {
+            FirebaseCrash.report(t);
+        }
+    });
 ```
 
 # Подключение Retrofit2 и RxJava
 
 ```
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-    compile 'com.squareup.okhttp:logging-interceptor:2.7.0'
+compile 'com.squareup.retrofit2:retrofit:2.1.0'
+compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+compile 'com.squareup.okhttp:logging-interceptor:2.7.0'
     
-    compile 'io.reactivex:rxjava:1.1.6'
-    compile 'io.reactivex:rxandroid:1.2.1'
+compile 'io.reactivex:rxjava:1.1.6'
+compile 'io.reactivex:rxandroid:1.2.1'
 ```
