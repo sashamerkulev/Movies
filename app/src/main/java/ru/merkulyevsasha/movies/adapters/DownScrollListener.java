@@ -35,7 +35,7 @@ public class DownScrollListener extends RecyclerView.OnScrollListener {
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         final int DOWN = 1;
-        final int UP = 1;
+        final int UP = 2;
 
         int visibleItemPosition = ((GridLayoutManager)mLayoutManager).findLastVisibleItemPosition();
 
