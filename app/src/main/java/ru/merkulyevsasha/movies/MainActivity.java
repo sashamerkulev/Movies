@@ -2,15 +2,13 @@ package ru.merkulyevsasha.movies;
 
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.google.firebase.crash.FirebaseCrash;
 
@@ -46,7 +44,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Bind(R.id.content_main)
     public View mRootView;
 
-    private SearchView mSearchView;
+    @Bind(R.id.action_search)
+    public SearchView mSearchView;
 
     private Subscription mSubscription;
 
@@ -57,6 +56,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Bind(R.id.recyclerView)
     public RecyclerView mRecyclerView;
 
+    @Bind(R.id.progressBar)
+    public ProgressBar mProgressBar;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +68,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mSearchView.setOnQueryTextListener(this);
+
+        hideSearchBar(false);
 
         mLocale = Locale.getDefault().getLanguage();
 
@@ -137,18 +144,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        mSearchView.setOnQueryTextListener(this);
-
-        hideSearchBar(false);
-
-        return true;
-    }
-
-    @Override
     public boolean onQueryTextSubmit(final String queryText) {
         if (queryText.length() < 3) {
             Snackbar.make(this.findViewById(R.id.content_main), R.string.search_validation_message, Snackbar.LENGTH_LONG)
@@ -156,7 +151,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     .show();
             return false;
         }
-
         mPage = 1;
         mNewQueryText = "";
         mQueryText = queryText;
@@ -202,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private Subscriber<Movies> getSubscriber(){
+        mProgressBar.setVisibility(View.VISIBLE);
         return new Subscriber<Movies>() {
             @Override
             public void onCompleted() {
@@ -217,6 +212,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             @Override
             public void onNext(Movies movies) {
+                mProgressBar.setVisibility(View.GONE);
+                mDownScrollListener.mLoading = false;
                 if (movies.results.size() > 0) {
 
                     mDownScrollListener.mPage = mPage;

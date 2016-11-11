@@ -11,6 +11,8 @@ public class DownScrollListener extends RecyclerView.OnScrollListener {
     private int mLastVisibleItemPosition = 0;
     private int mScrollDirection=0;
 
+    public boolean mLoading = false;
+
     public int mPage;
     public int mPageSize;
     public int mTotalPages;
@@ -43,8 +45,8 @@ public class DownScrollListener extends RecyclerView.OnScrollListener {
 
         mLastVisibleItemPosition = visibleItemPosition;
 
-        if (mScrollDirection == DOWN && mPage < mTotalPages && (mLastVisibleItemPosition + mVisibleThreshold) > mPageSize) {
-            mPage++;
+        if (!mLoading && mScrollDirection == DOWN && mPage < mTotalPages && (mLastVisibleItemPosition + mVisibleThreshold) > mPageSize) {
+            mLoading = true;
             if (LoadMore != null){
                 LoadMore.run();
             }
