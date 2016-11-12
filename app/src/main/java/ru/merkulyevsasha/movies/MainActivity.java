@@ -204,6 +204,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             @Override
             public void onError(Throwable e) {
+                mProgressBar.setVisibility(View.GONE);
+                mDownScrollListener.mLoading = false;
                 FirebaseCrash.report(e);
                 Snackbar.make(mRootView.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
                         .setAction("Action", null)

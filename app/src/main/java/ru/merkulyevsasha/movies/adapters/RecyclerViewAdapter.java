@@ -1,9 +1,12 @@
 package ru.merkulyevsasha.movies.adapters;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +18,6 @@ import com.google.firebase.crash.FirebaseCrash;
 
 import java.io.File;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,13 +37,13 @@ import ru.merkulyevsasha.movies.models.Movie;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ItemViewHolder>{
 
 
-    private final Activity mActivity;
+    private final AppCompatActivity mActivity;
     public List<Movie> Items;
     private final File mImageFolder;
     private final String mLocale;
     private final String mImageWidth;
 
-    public RecyclerViewAdapter(Activity activity, List<Movie> items){
+    public RecyclerViewAdapter(AppCompatActivity activity, List<Movie> items){
         Items = items;
         mActivity = activity;
         File imageFolder = new File(activity.getFilesDir(), ImageService.MOVIES_IMAGES_FOLDER);
@@ -54,30 +56,35 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_item, parent, false);
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_item, parent, false);
         return new ItemViewHolder(view, new OnClickListener() {
             @Override
             public void onItemClick(View v, int position) {
                 Intent detailsIntent = new Intent(mActivity, DetailsActivity.class);
                 Movie item = Items.get(position);
                 detailsIntent.putExtra("movieId", item.id);
-                mActivity.startActivity(detailsIntent);
+
+                if (Build.VERSION.SDK_INT > 15){
+                    ImageView moviePoster = (ImageView)view.findViewById(R.id.imageView);
+                    TextView movieVote = (TextView)view.findViewById(R.id.textVote);
+                    TextView movieCaption = (TextView)view.findViewById(R.id.textCaption);
+                    TextView movieDescription = (TextView)view.findViewById(R.id.textDescription);
+
+                    Pair<View, String> p1 = Pair.create((View)moviePoster, "movie_poster");
+                    Pair<View, String> p2 = Pair.create((View)movieVote, "movie_vote");
+                    Pair<View, String> p3 = Pair.create((View)movieCaption, "movie_caption");
+                    Pair<View, String> p4 = Pair.create((View)movieDescription, "movie_description");
+                    ActivityOptionsCompat options = ActivityOptionsCompat.
+                            makeSceneTransitionAnimation(mActivity, p1, p2, p3, p4);
+
+                    mActivity.startActivity(detailsIntent, options.toBundle());
+                }
+                else{
+                    mActivity.startActivity(detailsIntent);
+                }
             }
         });
     }
-
-    private boolean tryParseDateFormat(final String stringDate, final String formatDate, Date date){
-        try{
-            SimpleDateFormat format = new SimpleDateFormat(formatDate, Locale.ENGLISH);
-            date = format.parse(stringDate);
-            return true;
-        }
-        catch(ParseException e){
-            e.printStackTrace();
-            return false;
-        }
-    }
-
 
     @Override
     public void onBindViewHolder(final ItemViewHolder holder, int position) {

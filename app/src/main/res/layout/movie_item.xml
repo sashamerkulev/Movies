@@ -32,6 +32,7 @@
                 android:id="@+id/imageView"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/movie_poster"
+                android:transitionName="movie_poster"
                 />
             <TextView
                 android:layout_width="35dp"
@@ -45,7 +46,9 @@
                 android:textSize="14sp"
                 android:background="@drawable/circle_shape"
                 android:layout_marginTop="2dp"
-                android:layout_marginRight="2dp" />
+                android:layout_marginRight="2dp"
+                android:transitionName="movie_vote"
+                />
         </RelativeLayout>
 
         <LinearLayout
@@ -58,13 +61,17 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/textCaption"
                 android:layout_marginLeft="4dp"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:transitionName="movie_caption"
+                />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/textDescription"
                 android:layout_marginLeft="4dp"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:transitionName="movie_description"
+                />
         </LinearLayout>
 
         <TextView
