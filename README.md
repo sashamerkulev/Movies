@@ -64,7 +64,7 @@ service.getImage(mImageWidth, mBackdropPath, mLocale)
 
 # Есть transition и ripple анимации
 - transition - элемент parent activity вырастает в child activity
-- ripple - разбегается рябь/волна по кнопке в месте касанания
+- ripple - разбегается рябь/волна по кнопке c места касания
 
 # Подключение Retrofit2 и RxJava
 
