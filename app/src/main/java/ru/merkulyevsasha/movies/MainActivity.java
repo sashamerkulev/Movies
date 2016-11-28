@@ -47,18 +47,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Bind(R.id.action_search)
     public SearchView mSearchView;
 
-    private Subscription mSubscription;
-
-    private DownScrollListener mDownScrollListener;
-
-    private GridLayoutManager mLayoutManager;
-
     @Bind(R.id.recyclerView)
     public RecyclerView mRecyclerView;
 
     @Bind(R.id.progressBar)
     public ProgressBar mProgressBar;
 
+    private Subscription mSubscription;
+    private DownScrollListener mDownScrollListener;
+    private GridLayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +65,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hideSearchBar(false);
+            }
+        });
 
         mSearchView.setOnQueryTextListener(this);
 
