@@ -3,7 +3,11 @@ package ru.merkulyevsasha.movies;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -39,6 +43,8 @@ import rx.schedulers.Schedulers;
 import ru.merkulyevsasha.movies.http.MovieService;
 import ru.merkulyevsasha.movies.models.Details;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
+
 public class DetailsActivity extends AppCompatActivity {
 
     @Bind(R.id.details_content)
@@ -64,6 +70,9 @@ public class DetailsActivity extends AppCompatActivity {
 
     @Bind(R.id.button_home)
     public Button mButtonHome;
+
+    @Bind(R.id.fab)
+    public FloatingActionButton mFab;
 
     private Subscription mSubscription;
     private String mLocale;
@@ -136,6 +145,27 @@ public class DetailsActivity extends AppCompatActivity {
             }
 
         }
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mBackdropPath != null && !mBackdropPath.isEmpty()) {
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.setType("image/png");
+
+                    final File imageFile = new File(mImageFolder, mBackdropPath);
+                    final Bitmap mBitmap = BitmapFactory.decodeFile(imageFile.getPath());
+                    final String path = MediaStore.Images.Media.insertImage(getContentResolver(), mBitmap, mOriginalTitle, mOriginalTitle);
+                    final Uri uri = Uri.parse(path);
+                    sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
+
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, mOverview);
+                    startActivity(Intent.createChooser(sendIntent, getString(R.string.share_using)));
+                }
+            }
+        });
+
     }
 
     @Override
