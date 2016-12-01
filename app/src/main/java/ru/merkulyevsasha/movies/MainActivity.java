@@ -151,7 +151,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public boolean onQueryTextSubmit(final String queryText) {
         if (queryText.length() < 3) {
             Snackbar.make(this.findViewById(R.id.content_main), R.string.search_validation_message, Snackbar.LENGTH_LONG)
-                    .setAction("Action", null)
                     .show();
             return false;
         }
@@ -212,7 +211,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 mDownScrollListener.mLoading = false;
                 FirebaseCrash.report(e);
                 Snackbar.make(mRootView.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
                         .show();
             }
 
@@ -242,7 +240,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
                 } else {
                     Snackbar.make(mRootView.findViewById(R.id.content_main), R.string.search_nofound_message, Snackbar.LENGTH_LONG)
-                            .setAction("Action", null)
                             .show();
                 }
             }

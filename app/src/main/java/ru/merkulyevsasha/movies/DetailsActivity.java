@@ -6,15 +6,13 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +20,7 @@ import com.google.firebase.crash.FirebaseCrash;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -34,6 +33,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import ru.merkulyevsasha.movies.helpers.DisplayHelper;
 import ru.merkulyevsasha.movies.http.ImageService;
+import ru.merkulyevsasha.movies.models.Cast;
+import ru.merkulyevsasha.movies.models.Credits;
 import ru.merkulyevsasha.movies.models.Dict;
 import rx.Subscriber;
 import rx.Subscription;
@@ -43,15 +44,10 @@ import rx.schedulers.Schedulers;
 import ru.merkulyevsasha.movies.http.MovieService;
 import ru.merkulyevsasha.movies.models.Details;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
-
 public class DetailsActivity extends AppCompatActivity {
 
     @Bind(R.id.details_content)
     public View mRootView;
-
-    @Bind(R.id.caption)
-    public TextView mCaption;
 
     @Bind(R.id.vote)
     public TextView mVote;
@@ -68,8 +64,8 @@ public class DetailsActivity extends AppCompatActivity {
     @Bind(R.id.countries)
     public TextView mCountries;
 
-    @Bind(R.id.button_home)
-    public Button mButtonHome;
+    @Bind(R.id.casts)
+    public TextView mCasts;
 
     @Bind(R.id.fab)
     public FloatingActionButton mFab;
@@ -93,12 +89,15 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        setContentView(R.layout.activity_details_new);
         ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.details_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
 
         mLocale = Locale.getDefault().getLanguage();
 
@@ -117,6 +116,12 @@ public class DetailsActivity extends AppCompatActivity {
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(getSubscriber());
+
+            service.credits(movieId)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(getCreditSubscriber());
+
         } else {
             mHomePage = savedInstanceState.getString("mHomePage");
             mOriginalTitle = savedInstanceState.getString("mOriginalTitle");
@@ -127,7 +132,7 @@ public class DetailsActivity extends AppCompatActivity {
             mProductionCountries = savedInstanceState.getString("mProductionCountries");
             mBackdropPath = savedInstanceState.getString("mBackdropPath");
 
-            mCaption.setText(mOriginalTitle);
+            setTitle(mOriginalTitle);
             mTagline.setText(mTaglineText);
             mDescription.setText(mOverview);
 
@@ -204,7 +209,6 @@ public class DetailsActivity extends AppCompatActivity {
             public void onError(Throwable e) {
                 FirebaseCrash.report(e);
                 Snackbar.make(mRootView.findViewById(R.id.content_main), R.string.details_error_message, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
                         .show();
             }
 
@@ -213,12 +217,14 @@ public class DetailsActivity extends AppCompatActivity {
                 if (details != null) {
 
                     mOriginalTitle = details.originalTitle;
+
+                    setTitle(mOriginalTitle);
+
                     mTaglineText = details.tagline;
                     mOverview = details.overview;
                     mGenresText = joinDicts(details.genres);
                     mProductionCountries = joinDicts(details.productionCountries);
 
-                    mCaption.setText(details.originalTitle);
                     mTagline.setText(details.tagline);
                     mDescription.setText(details.overview);
 
@@ -270,7 +276,6 @@ public class DetailsActivity extends AppCompatActivity {
                     }
                 } else {
                     Snackbar.make(mRootView.findViewById(R.id.content_main), R.string.details_error_message, Snackbar.LENGTH_LONG)
-                            .setAction("Action", null)
                             .show();
                 }
             }
@@ -278,22 +283,46 @@ public class DetailsActivity extends AppCompatActivity {
 
     }
 
-    private void bindOnClickHomeButtonIfHomePageExists(final String homePage){
-        if (homePage == null || homePage.isEmpty()){
-            mButtonHome.setVisibility(View.GONE);
-        } else{
+    private Subscriber<Credits> getCreditSubscriber() {
+        return new Subscriber<Credits>() {
+            @Override
+            public void onCompleted() {
+            }
 
-            mButtonHome.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(homePage));
-                    if (intent.resolveActivity(getPackageManager()) != null)
-                    {
-                        startActivity(intent);
-                    }
+            @Override
+            public void onError(Throwable e) {
+                FirebaseCrash.report(e);
+                Snackbar.make(mRootView.findViewById(R.id.content_main), R.string.details_error_message, Snackbar.LENGTH_LONG)
+                        .show();
+            }
+
+            @Override
+            public void onNext(final Credits credits) {
+                if (credits != null) {
+                    mCasts.setText(joinCast(credits.casts));
                 }
-            });
-        }
+            }
+        };
+
+    }
+
+
+    private void bindOnClickHomeButtonIfHomePageExists(final String homePage){
+//        if (homePage == null || homePage.isEmpty()){
+//            mButtonHome.setVisibility(View.GONE);
+//        } else{
+//
+//            mButtonHome.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    Intent intent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(homePage));
+//                    if (intent.resolveActivity(getPackageManager()) != null)
+//                    {
+//                        startActivity(intent);
+//                    }
+//                }
+//            });
+//        }
     }
 
     private void setImageBitmap(File imageFile, ImageView imageView){
@@ -309,6 +338,30 @@ public class DetailsActivity extends AppCompatActivity {
                 sb.append("\n");
             }
             sb.append(item.name);
+        }
+
+        return sb.toString();
+    }
+
+    private String joinCast(List<Cast> list){
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+
+        for (Cast item : list) {
+            if (sb.length() > 0){
+                sb.append(", ");
+            }
+            sb.append(item.name);
+
+            if (item.character != null && !item.character.isEmpty()){
+                sb.append(" (");
+                sb.append(item.character);
+                sb.append(")");
+            }
+
+            if (i> 9)
+                break;
+            i++;
         }
 
         return sb.toString();

@@ -8,6 +8,7 @@ import rx.Observable;
 
 import ru.merkulyevsasha.movies.models.Details;
 import ru.merkulyevsasha.movies.models.Movies;
+import ru.merkulyevsasha.movies.models.Credits;
 
 interface MovieInterface {
 
@@ -16,5 +17,8 @@ interface MovieInterface {
 
     @GET("movie/{movie}")
     Observable<Details> details(@Path("movie") int movie, @Query("api_key") String api, @Query("language") String language);
+
+    @GET("movie/{movie}/credits")
+    Observable<Credits> credits(@Path("movie") int movie, @Query("api_key") String api/*, @Query("language") String language*/);
 
 }

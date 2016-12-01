@@ -8,5 +8,6 @@
     <string name="back_button_description">Вернуться</string>
     <string name="movie_poster">Плакат фильма</string>
     <string name="go_to_homepage_button_message">На страницу</string>
-    <string name="share_using">Отправить куда</string>
+    <string name="share_using">Поделиться</string>
+    <string name="casts">Актеры</string>
 </resources>

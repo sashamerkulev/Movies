@@ -13,6 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import ru.merkulyevsasha.movies.models.Details;
 import ru.merkulyevsasha.movies.models.Movies;
+import ru.merkulyevsasha.movies.models.Credits;
 
 public class MovieService {
 
@@ -56,6 +57,11 @@ public class MovieService {
     public Observable<Details> details(int movie, String language) {
         return movieInterface.details(movie, API_KEY, language);
     }
+
+    public Observable<Credits> credits(int movie) {
+        return movieInterface.credits(movie, API_KEY);
+    }
+
 
     public static void unsubscribe(Subscription subscription){
         if (subscription != null && !subscription.isUnsubscribed()){
