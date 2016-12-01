@@ -96,23 +96,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Movie movie = Items.get(position);
 
         holder.mImageView.setImageBitmap(null);
-        holder.mtextVote.setText(null);
-        holder.mTextCaption.setText(null);
-        holder.mTextTagline.setText(null);
-        holder.mTextYear.setText(null);
+        holder.mtextVote.setText("");
+        holder.mTextCaption.setText("");
+        holder.mTextTagline.setText("");
+        holder.mTextYear.setText("");
 
-        String caption = movie.originalTitle.trim();
-        String description = movie.overview;
         String stringVote = movie.voteAverage;
         String stringDate = movie.releaseDate;
-
-        holder.mTextCaption.setText(caption);
-
-        if (description != null && description.length() > 50) {
-            description = description.substring(0, 50);
-        }
-
-        //holder.mTextDescription.setText(description == null ? "" : description);
 
         if (stringDate != null && !stringDate.isEmpty()) {
             try {
@@ -156,6 +146,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     public void onNext(final Details details) {
                         if (details != null) {
                             holder.mTextTagline.setText(details.tagline);
+
+                            String caption;
+                            if (details.title == null || details.title.isEmpty()) {
+                                caption = details.originalTitle;
+                            } else {
+                                caption = details.title;
+                            }
+                            holder.mTextCaption.setText(caption);
+
                         }
                     }
                 });

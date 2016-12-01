@@ -6,18 +6,16 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 
-public class Credits {
+public class Titles {
 
     @SerializedName("id")
     @Expose
     public int id;
 
-    @SerializedName("cast")
+    @SerializedName("titles")
     @Expose
-    public List<Cast> casts;
-
-    @SerializedName("crew")
-    @Expose
-    public List<Crew> crew;
+    public List<Title> titles;
 
 }
+
+

@@ -4,6 +4,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
+import ru.merkulyevsasha.movies.models.Titles;
 import rx.Observable;
 
 import ru.merkulyevsasha.movies.models.Details;
@@ -20,5 +21,8 @@ interface MovieInterface {
 
     @GET("movie/{movie}/credits")
     Observable<Credits> credits(@Path("movie") int movie, @Query("api_key") String api/*, @Query("language") String language*/);
+
+    @GET("movie/{movie}/alternative_titles")
+    Observable<Titles> titles(@Path("movie") int movie, @Query("api_key") String api, @Query("language") String language);
 
 }

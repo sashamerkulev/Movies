@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import ru.merkulyevsasha.movies.models.Titles;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -62,6 +63,9 @@ public class MovieService {
         return movieInterface.credits(movie, API_KEY);
     }
 
+    public Observable<Titles> titles(int movie, String language) {
+        return movieInterface.titles(movie, API_KEY, language);
+    }
 
     public static void unsubscribe(Subscription subscription){
         if (subscription != null && !subscription.isUnsubscribed()){

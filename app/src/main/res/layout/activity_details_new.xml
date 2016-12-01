@@ -77,6 +77,8 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/tagline"
                         android:textSize="14sp"
+                        android:layout_toLeftOf="@+id/vote"
+                        android:layout_toStartOf="@+id/vote"
                         android:transitionName="movie_tagline"
                         />
                     <TextView
@@ -111,6 +113,7 @@
                 </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/container_casts"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -129,7 +132,28 @@
                     />
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/container_crew"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:text="@string/crew" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/crew"
+                    android:textSize="14sp"
+                    />
+            </LinearLayout>
+
                 <LinearLayout
+                    android:id="@+id/container_genres"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -149,6 +173,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/container_countries"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

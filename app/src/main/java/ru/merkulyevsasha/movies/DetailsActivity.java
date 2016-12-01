@@ -14,13 +14,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.firebase.crash.FirebaseCrash;
 
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,7 +35,9 @@ import ru.merkulyevsasha.movies.helpers.DisplayHelper;
 import ru.merkulyevsasha.movies.http.ImageService;
 import ru.merkulyevsasha.movies.models.Cast;
 import ru.merkulyevsasha.movies.models.Credits;
+import ru.merkulyevsasha.movies.models.Crew;
 import ru.merkulyevsasha.movies.models.Dict;
+import ru.merkulyevsasha.movies.models.Titles;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -66,6 +68,21 @@ public class DetailsActivity extends AppCompatActivity {
 
     @Bind(R.id.casts)
     public TextView mCasts;
+
+    @Bind(R.id.crew)
+    public TextView mCrew;
+
+    @Bind(R.id.container_casts)
+    public LinearLayout mContainerCasts;
+
+    @Bind(R.id.container_crew)
+    public LinearLayout mContainerCrew;
+
+    @Bind(R.id.container_genres)
+    public LinearLayout mContainerGenres;
+
+    @Bind(R.id.container_countries)
+    public LinearLayout mContainerCountries;
 
     @Bind(R.id.fab)
     public FloatingActionButton mFab;
@@ -121,6 +138,11 @@ public class DetailsActivity extends AppCompatActivity {
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(getCreditSubscriber());
+
+            service.titles(movieId, mLocale)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(getTitlesSubscriber());
 
         } else {
             mHomePage = savedInstanceState.getString("mHomePage");
@@ -216,7 +238,11 @@ public class DetailsActivity extends AppCompatActivity {
             public void onNext(final Details details) {
                 if (details != null) {
 
-                    mOriginalTitle = details.originalTitle;
+                    if (details.title == null || details.title.isEmpty()) {
+                        mOriginalTitle = details.originalTitle;
+                    } else {
+                        mOriginalTitle = details.title;
+                    }
 
                     setTitle(mOriginalTitle);
 
@@ -240,8 +266,20 @@ public class DetailsActivity extends AppCompatActivity {
                         }
                     }
 
-                    mGenres.setText(joinDicts(details.genres));
-                    mCountries.setText(joinDicts(details.productionCountries));
+                    String genres = joinDicts(details.genres);
+                    if (genres.isEmpty()){
+                        mContainerGenres.setVisibility(View.GONE);
+                    } else {
+                        mContainerGenres.setVisibility(View.VISIBLE);
+                        mGenres.setText(genres);
+                    }
+                    String countries = joinDicts(details.productionCountries);
+                    if (countries.isEmpty()){
+                        mContainerCountries.setVisibility(View.GONE);
+                    } else {
+                        mContainerCountries.setVisibility(View.VISIBLE);
+                        mCountries.setText(countries);
+                    }
 
                     mHomePage = details.homepage;
                     bindOnClickHomeButtonIfHomePageExists(mHomePage);
@@ -292,14 +330,45 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onError(Throwable e) {
                 FirebaseCrash.report(e);
-                Snackbar.make(mRootView.findViewById(R.id.content_main), R.string.details_error_message, Snackbar.LENGTH_LONG)
-                        .show();
             }
 
             @Override
             public void onNext(final Credits credits) {
                 if (credits != null) {
-                    mCasts.setText(joinCast(credits.casts));
+                    String casts = joinCast(credits.casts);
+                    if (casts.isEmpty()){
+                        mContainerCasts.setVisibility(View.GONE);
+                    } else {
+                        mContainerCasts.setVisibility(View.VISIBLE);
+                        mCasts.setText(casts);
+                    }
+                    String crew = joinCrew(credits.crew);
+                    if (crew.isEmpty()){
+                        mContainerCrew.setVisibility(View.GONE);
+                    } else {
+                        mContainerCrew.setVisibility(View.VISIBLE);
+                        mCrew.setText(crew);
+                    }
+                }
+            }
+        };
+
+    }
+
+    private Subscriber<Titles> getTitlesSubscriber() {
+        return new Subscriber<Titles>() {
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                FirebaseCrash.report(e);
+            }
+
+            @Override
+            public void onNext(final Titles titles) {
+                if (titles != null) {
                 }
             }
         };
@@ -360,6 +429,30 @@ public class DetailsActivity extends AppCompatActivity {
             }
 
             if (i> 9)
+                break;
+            i++;
+        }
+
+        return sb.toString();
+    }
+
+    private String joinCrew(List<Crew> list){
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+
+        for (Crew item : list) {
+            if (sb.length() > 0){
+                sb.append(", ");
+            }
+            sb.append(item.name);
+
+            if (item.department != null && !item.department.isEmpty()){
+                sb.append(" (");
+                sb.append(item.department);
+                sb.append(")");
+            }
+
+            if (i> 5)
                 break;
             i++;
         }
