@@ -2,6 +2,7 @@ package ru.merkulyevsasha.movies.adapters;
 
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 public class DownScrollListener extends RecyclerView.OnScrollListener {
 
@@ -26,7 +27,7 @@ public class DownScrollListener extends RecyclerView.OnScrollListener {
 
         mLayoutManager = layoutManager;
 
-        mVisibleThreshold = ((GridLayoutManager)layoutManager).getSpanCount()*5;
+        mVisibleThreshold = ((GridLayoutManager)layoutManager).getSpanCount()*7;
         mLastVisibleItemPosition = 0;
         mScrollDirection=0;
 
@@ -43,11 +44,17 @@ public class DownScrollListener extends RecyclerView.OnScrollListener {
                 ? DOWN
                 : UP;
 
+        //Log.d("DownScrollListener", "onScrolled: "+ visibleItemPosition + ", "+ mLastVisibleItemPosition);
+        if (mLastVisibleItemPosition == visibleItemPosition){
+            recyclerView.stopScroll();
+        }
+
         mLastVisibleItemPosition = visibleItemPosition;
 
         if (!mLoading && mScrollDirection == DOWN && mPage < mTotalPages && (mLastVisibleItemPosition + mVisibleThreshold) > mPageSize) {
             mLoading = true;
             if (LoadMore != null){
+                recyclerView.stopScroll();
                 LoadMore.run();
             }
         }
