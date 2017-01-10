@@ -6,7 +6,7 @@
 - RxJava
 - Retrofit2
 
-Подключен Firebase Crash Reporting service (файл с настройками google-services.json, я не выкладывал :)).
+Подключен Firebase Crash Reporting service.
 
 # Приложение содержит две Activity:
 
